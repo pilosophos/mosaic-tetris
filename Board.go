@@ -39,6 +39,7 @@ func NewBoard(width int, height int) *Board {
 
 // Clear any rows that are full of blocks and update Score/LinesCleared/Message accordingly
 func (board *Board) ClearFullRows() {
+	// detect full rows
 	clearRows := []int{}
 	for row, rowBlocks := range board.Blocks {
 		if !slices.Contains(rowBlocks, nil) {
@@ -46,6 +47,7 @@ func (board *Board) ClearFullRows() {
 		}
 	}
 
+	// detect full columns
 	clearCols := []int{}
 	for col := 0; col < board.Width; col++ {
 		verticalClear := true
@@ -59,6 +61,7 @@ func (board *Board) ClearFullRows() {
 		}
 	}
 
+	// clear full rows/columns
 	for _, col := range clearCols {
 		for row := 0; row < board.Height; row++ {
 			board.Blocks[row][col] = nil
