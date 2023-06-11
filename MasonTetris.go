@@ -78,8 +78,7 @@ func handleKeypress(key keyboard.Key, hoveringTetromino *UnplacedTetromino, boar
 	case keyboard.KeyArrowDown:
 		hoveringTetromino.Translate(0, 1)
 	case keyboard.KeySpace:
-		board.PlaceTetromino(hoveringTetromino)
-		return true
+		return board.PlaceTetromino(hoveringTetromino)
 	}
 	return false
 }

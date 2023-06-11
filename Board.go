@@ -25,13 +25,15 @@ func NewBoard(width int, height int) *Board {
 	}
 }
 
-func (board Board) PlaceTetromino(tetromino *UnplacedTetromino) {
+func (board Board) PlaceTetromino(tetromino *UnplacedTetromino) bool {
 	if len(board.IllegalBlocks) == 0 {
 		for _, blockXY := range tetromino.BlockGlobalXYs() {
 			x, y := blockXY[0], blockXY[1]
 			board.Blocks[y][x] = NewBlock(tetromino.Color, "@")
 		}
+		return true
 	}
+	return false
 }
 
 func (board *Board) HoverTetromino(tetromino *UnplacedTetromino) {
