@@ -46,10 +46,9 @@ func main() {
 		board.HoverTetromino(hoveringTetromino)
 
 		s.Show()
-		drawText(s, 0, 0, defStyle, "NEXT")
-		drawText(s, 0, 1, defStyle, tetrominoQueue.Peek().String())
-		// drawText(s, 0, 4+1, defStyle, board.String())
-		board.Render(s, defStyle, drawText, 0, 4+1)
+		drawText(s, (BoardSizeW*2)+2, 1, defStyle, "NEXT")
+		drawText(s, (BoardSizeW*2)+2, 2, defStyle, tetrominoQueue.Peek().String())
+		board.Render(s, defStyle, drawText, 0, 0)
 
 		select {
 		case <-tickTimer:
