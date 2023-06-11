@@ -30,7 +30,7 @@ func NewBoard(width int, height int) *Board {
 		width,
 		0,
 		0,
-		"fgsd",
+		"",
 	}
 }
 
