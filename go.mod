@@ -1,4 +1,4 @@
-module masontetris
+module mosaictetris
 
 go 1.20
 
