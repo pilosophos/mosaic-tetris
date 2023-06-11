@@ -87,7 +87,8 @@ func (board Board) String() string {
 
 		for x, block := range row {
 			if slices.Contains(board.IllegalBlocks, [2]int{x, y}) {
-				rows[y] += "\033[1;31m" + "X" + "\033[0m"
+				// rows[y] += "\033[1;31m" + "X" + "\033[0m"
+				rows[y] += "X"
 			} else if board.HoveringTetromino != nil && slices.Contains(board.HoveringTetromino.BlockGlobalXYs(), [2]int{x, y}) {
 				rows[y] += board.HoveringTetromino.BlockString()
 			} else if block == nil {

@@ -21,7 +21,7 @@ func NewUnplacedTetromino(blocksRelativeXY [][2]int, topLeftXY [2]int, timeLeft 
 		blocksRelativeXY,
 		topLeftXY,
 		timeLeft,
-		color,
+		"",
 		0, 0,
 	}
 	tetromino.ComputeDimensions()
@@ -70,7 +70,7 @@ func (tetromino *UnplacedTetromino) Translate(dx int, dy int, boardWidth int, bo
 
 // Get the string representation of one of this tetromino's blocks
 func (tetromino UnplacedTetromino) BlockString() string {
-	return tetromino.Color + strconv.Itoa(tetromino.TimeLeft) + "\033[0m"
+	return strconv.Itoa(tetromino.TimeLeft)
 }
 
 // Rotate the tetromino by some number of degrees about (0, 0)

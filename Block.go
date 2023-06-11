@@ -10,5 +10,6 @@ func NewBlock(color string, tile string) *Block {
 }
 
 func (block Block) String() string {
-	return block.Color + block.Tile + "\033[0m"
+	// return block.Color + block.Tile + "\033[0m"
+	return block.Tile
 }

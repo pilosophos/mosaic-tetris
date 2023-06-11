@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/gdamore/tcell/v2"
-	"github.com/inancgumus/screen"
 )
 
 const BoardSizeW = 10
@@ -35,20 +34,21 @@ func main() {
 
 	board := NewBoard(BoardSizeW, BoardSizeH)
 
-	screen.Clear()
-
 	// start global tick timer
 	tickTimer := make(chan bool)
 	go tickGameForever(tickTimer)
 
+	termEvents := make(chan tcell.Event)
+	tcellQuit := make(chan struct{})
+	go s.ChannelEvents(termEvents, tcellQuit)
+
 	for {
 		board.HoverTetromino(hoveringTetromino)
 
-		screen.MoveTopLeft()
-		s.Clear()
-		fmt.Println("NEXT")
-		fmt.Println(tetrominoQueue.Peek())
-		fmt.Println(board)
+		s.Show()
+		drawText(s, 0, 0, defStyle, "NEXT")
+		drawText(s, 0, 1, defStyle, tetrominoQueue.Peek().String())
+		drawText(s, 0, 4+1, defStyle, board.String())
 
 		select {
 		case <-tickTimer:
@@ -61,12 +61,17 @@ func main() {
 				}
 				hoveringTetromino = tetrominoQueue.Pop()
 			}
-		default:
-			ev := s.PollEvent()
-
-			if ev, ok := ev.(*tcell.EventKey); ok {
-				handleKeypress(ev, quit, hoveringTetromino, board)
+		case ev := <-termEvents:
+			switch ev := ev.(type) {
+			case *tcell.EventResize:
+				s.Sync()
+			case *tcell.EventKey:
+				placed := handleKeypress(ev, quit, hoveringTetromino, board)
+				if placed {
+					hoveringTetromino = tetrominoQueue.Pop()
+				}
 			}
+		default: // pass
 		}
 	}
 }
@@ -117,4 +122,17 @@ func handleKeypress(eventKey *tcell.EventKey, quit func(), hoveringTetromino *Un
 		return board.PlaceTetromino(hoveringTetromino)
 	}
 	return false
+}
+
+func drawText(s tcell.Screen, x1, y1 int, style tcell.Style, text string) {
+	row := y1
+	col := x1
+	for _, r := range []rune(text) {
+		s.SetContent(col, row, r, nil, style)
+		col++
+		if r == rune('\n') {
+			row++
+			col = x1
+		}
+	}
 }
