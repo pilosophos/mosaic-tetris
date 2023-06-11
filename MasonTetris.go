@@ -21,18 +21,8 @@ func main() {
 		_ = keyboard.Close()
 	}()
 
-	// make a test tetromino
-	tet := NewUnplacedTetromino(
-		[][2]int{
-			{0, 0},
-			{0, 1},
-			{0, 2},
-			{1, 0},
-		},
-		[2]int{0, 0},
-		4,
-		"\033[1;34m",
-	)
+	tetrominoQueue := NewTetrominoQueue()
+	hoveringTetromino := tetrominoQueue.Next()
 
 	board := NewBoard(BoardSizeW, BoardSizeH)
 
@@ -44,7 +34,7 @@ func main() {
 
 	for {
 		screen.MoveTopLeft()
-		board.HoverTetromino(tet)
+		board.HoverTetromino(hoveringTetromino)
 		fmt.Println(board)
 
 		select {
@@ -52,10 +42,13 @@ func main() {
 			if event.Err != nil {
 				panic(event.Err)
 			}
-			handleKeypress(event.Key, tet, board)
+			tetrominoPlaced := handleKeypress(event.Key, hoveringTetromino, board)
+			if tetrominoPlaced {
+				hoveringTetromino = tetrominoQueue.Next()
+			}
 		case tick := <-tickTimer:
 			if tick {
-				tet.Tick()
+				hoveringTetromino.Tick()
 			}
 		}
 	}
@@ -68,7 +61,7 @@ func tickGameForever(tick chan bool) {
 	}
 }
 
-func handleKeypress(key keyboard.Key, hoveringTetromino *UnplacedTetromino, board *Board) {
+func handleKeypress(key keyboard.Key, hoveringTetromino *UnplacedTetromino, board *Board) (placed bool) {
 	switch key {
 	case keyboard.KeyEsc:
 		os.Exit(0)
@@ -82,5 +75,7 @@ func handleKeypress(key keyboard.Key, hoveringTetromino *UnplacedTetromino, boar
 		hoveringTetromino.Translate(0, 1)
 	case keyboard.KeySpace:
 		board.PlaceTetromino(hoveringTetromino)
+		return true
 	}
+	return false
 }
