@@ -3,4 +3,4 @@ Mosaic Tetris is a Tetris variant where you can put the tetrominos anywhere and 
 
 This is my first ever program written in Go!
 
-![image](https://github.com/pilosophos/mosaic-tetris/assets/48043580/e2006ab0-cbf8-44df-a965-6fa755090820)
+![image](https://github.com/pilosophos/mosaic-tetris/assets/48043580/42d7a95c-058c-40de-9fc0-b3ca47dea772)
