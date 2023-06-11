@@ -60,6 +60,8 @@ func main() {
 				tetrominoPlaced := board.PlaceTetromino(hoveringTetromino)
 				if !tetrominoPlaced {
 					fmt.Println("You lose!")
+					fmt.Println("Press any key to quit!")
+					s.PollEvent()
 					quit()
 				}
 				hoveringTetromino = tetrominoQueue.Pop()
