@@ -6,12 +6,15 @@ type TetrominoQueue struct {
 	Queue []*UnplacedTetromino
 }
 
+// Create a new tetromino queue
 func NewTetrominoQueue() *TetrominoQueue {
 	return &TetrominoQueue{
 		[]*UnplacedTetromino{},
 	}
 }
 
+// Peek at the next tetromino without removing it from the queue,
+// generating more tetrominos is the queue is empty
 func (tq *TetrominoQueue) Peek() (nextTetromino *UnplacedTetromino) {
 	if len(tq.Queue) == 0 {
 		tq.RefreshQueue()
@@ -19,6 +22,8 @@ func (tq *TetrominoQueue) Peek() (nextTetromino *UnplacedTetromino) {
 	return tq.Queue[0]
 }
 
+// Pop the next tetromino from the queue,
+// generating more tetrominos is the queue is empty
 func (tq *TetrominoQueue) Pop() (nextTetromino *UnplacedTetromino) {
 	if len(tq.Queue) == 0 {
 		tq.RefreshQueue()
@@ -27,6 +32,8 @@ func (tq *TetrominoQueue) Pop() (nextTetromino *UnplacedTetromino) {
 	return nextTetromino
 }
 
+// Generates more tetrominoes to add to the queue
+// All 7 tetrominoes are shuffled, then rotated a random amount before going in the queue
 func (tq *TetrominoQueue) RefreshQueue() {
 	startLoc := [2]int{5, 10}
 	startTime := 4

@@ -7,14 +7,15 @@ import (
 )
 
 type UnplacedTetromino struct {
-	BlockRelativeXYs [][2]int
-	TopLeftXY        [2]int
-	TimeLeft         int
-	Color            string
-	Width            int
-	Height           int
+	BlockRelativeXYs [][2]int // Coordinates of each block in the tetromino's own reference frame
+	TopLeftXY        [2]int   // The global coodinate of this tetromino's top left corder
+	TimeLeft         int      // Time left before the game forces the tetromino to be placed
+	Color            string   // Color of the tetromino as an ANSI control character
+	Width            int      // Width of this tetromino
+	Height           int      // Height of this tetromino
 }
 
+// Create a new unplaced tetromino
 func NewUnplacedTetromino(blocksRelativeXY [][2]int, topLeftXY [2]int, timeLeft int, color string) (tetromino *UnplacedTetromino) {
 	tetromino = &UnplacedTetromino{
 		blocksRelativeXY,
@@ -27,6 +28,7 @@ func NewUnplacedTetromino(blocksRelativeXY [][2]int, topLeftXY [2]int, timeLeft 
 	return tetromino
 }
 
+// Tick down the time left before the game forces this tetromino to be placed
 func (tetromino *UnplacedTetromino) Tick() int {
 	tetromino.TimeLeft--
 	return tetromino.TimeLeft
@@ -44,6 +46,7 @@ func (tetromino UnplacedTetromino) BlockGlobalXYs() (globalXYs [][2]int) {
 	return globalXYs
 }
 
+// Move the tetromino by some amount, bounded by the size of the board
 func (tetromino *UnplacedTetromino) Translate(dx int, dy int, boardWidth int, boardHeight int) {
 	xlimit := boardWidth - tetromino.Width
 	ylimit := boardHeight - tetromino.Height
@@ -65,10 +68,13 @@ func (tetromino *UnplacedTetromino) Translate(dx int, dy int, boardWidth int, bo
 	tetromino.TopLeftXY[1] = newy
 }
 
+// Get the string representation of one of this tetromino's blocks
 func (tetromino UnplacedTetromino) BlockString() string {
 	return tetromino.Color + strconv.Itoa(tetromino.TimeLeft) + "\033[0m"
 }
 
+// Rotate the tetromino by some number of degrees about (0, 0)
+// keeping all relative coordinates positive
 func (tetromino *UnplacedTetromino) Rotate(angleDegrees int) {
 	angle := float64(angleDegrees) * math.Pi / 180
 	xmin := 0
@@ -99,6 +105,7 @@ func (tetromino *UnplacedTetromino) Rotate(angleDegrees int) {
 	tetromino.ComputeDimensions()
 }
 
+// Compute and store the dimensions of the tetromino
 func (tetromino *UnplacedTetromino) ComputeDimensions() {
 	xmax := 0
 	ymax := 0
@@ -115,6 +122,7 @@ func (tetromino *UnplacedTetromino) ComputeDimensions() {
 	tetromino.Height = ymax + 1
 }
 
+// Get a string representation of the tetromino
 func (tetromino UnplacedTetromino) String() string {
 	squares := make([][4]string, 4)
 

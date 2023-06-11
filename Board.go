@@ -8,15 +8,16 @@ import (
 )
 
 type Board struct {
-	Blocks            [][]*Block // height/y/row, width/x/col
-	HoveringTetromino *UnplacedTetromino
-	IllegalBlocks     [][2]int // coordinates the hovering tetromino above that already have blocks on them
-	Width             int
-	LinesCleared      int
-	Score             int
-	Message           string
+	Blocks            [][]*Block         // 2D array of the blocks on the board [0]=height/y/row, [1]=width/x/col
+	HoveringTetromino *UnplacedTetromino // The tetromino currently hovering over the board
+	IllegalBlocks     [][2]int           // Coordinates the hovering tetromino is above that already have blocks on them
+	Width             int                // Width of the board
+	LinesCleared      int                // Number of lines cleared
+	Score             int                // Guess what this might represent
+	Message           string             // Message to display after clearing one or more lines
 }
 
+// Create a new Mosaic Tetris board
 func NewBoard(width int, height int) *Board {
 	blocks := make([][]*Block, height)
 	for i := range blocks {
@@ -34,6 +35,7 @@ func NewBoard(width int, height int) *Board {
 	}
 }
 
+// Clear any rows that are full of blocks and update Score/LinesCleared/Message accordingly
 func (board *Board) ClearFullRows() {
 	linesCleared := 0
 	for row, rowBlocks := range board.Blocks {
@@ -48,6 +50,7 @@ func (board *Board) ClearFullRows() {
 	board.Message = []string{"         ", "Single", "Double", "Triple", "Tetris!"}[linesCleared]
 }
 
+// Try placing the tetromino on the board, returning true if it succeeded
 func (board *Board) PlaceTetromino(tetromino *UnplacedTetromino) bool {
 	if len(board.IllegalBlocks) == 0 {
 		for _, blockXY := range tetromino.BlockGlobalXYs() {
@@ -61,6 +64,8 @@ func (board *Board) PlaceTetromino(tetromino *UnplacedTetromino) bool {
 	return false
 }
 
+// Hover a tetromino over the board and calculate positions where it would
+// collide with an already placed block
 func (board *Board) HoverTetromino(tetromino *UnplacedTetromino) {
 	board.IllegalBlocks = make([][2]int, 0)
 	board.HoveringTetromino = tetromino
@@ -73,6 +78,7 @@ func (board *Board) HoverTetromino(tetromino *UnplacedTetromino) {
 	}
 }
 
+// Get a string representation of the board
 func (board Board) String() string {
 	rows := []string{}
 
