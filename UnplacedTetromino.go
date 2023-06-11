@@ -21,6 +21,10 @@ func NewUnplacedTetromino(blocksRelativeXY [][2]int, topLeftXY [2]int, timeLeft 
 	}
 }
 
+func (tetromino *UnplacedTetromino) Tick() {
+	tetromino.TimeLeft--
+}
+
 // Get the global coordinates of this tetromino's blocks
 func (tetromino UnplacedTetromino) BlockGlobalXYs() (globalXYs [][2]int) {
 	for _, blockXY := range tetromino.BlockRelativeXYs {

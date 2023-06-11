@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"github.com/eiannone/keyboard"
 	"github.com/inancgumus/screen"
@@ -37,6 +38,10 @@ func main() {
 
 	screen.Clear()
 
+	// start global tick timer
+	tickTimer := make(chan bool)
+	go tickGameForever(tickTimer)
+
 	for {
 		screen.MoveTopLeft()
 		board.HoverTetromino(tet)
@@ -48,8 +53,18 @@ func main() {
 				panic(event.Err)
 			}
 			handleKeypress(event.Key, tet, board)
-		default:
+		case tick := <-tickTimer:
+			if tick {
+				tet.Tick()
+			}
 		}
+	}
+}
+
+func tickGameForever(tick chan bool) {
+	for {
+		time.Sleep(1 * time.Second)
+		tick <- true
 	}
 }
 
