@@ -73,8 +73,15 @@ func (board *Board) ClearFullRows() {
 
 	linesCleared := len(clearRows) + len(clearCols)
 	board.LinesCleared += linesCleared
-	board.Score += []int{0, 100, 300, 500, 800, 1100}[linesCleared]
-	board.Message = []string{"         ", "Single   ", "Double!  ", "Triple!! ", "Tetris!!!", "MOSAIC!!!"}[linesCleared]
+	board.Score += []int{0, 100, 300, 500, 800, 1100, 1400}[linesCleared]
+	board.Message = []string{
+		"            ",
+		"Single      ",
+		"Double!     ",
+		"Triple!!    ",
+		"Tetris!!!   ",
+		"MOSAIC!!!!  ",
+		"SUPER MOSAIC"}[linesCleared]
 }
 
 // Try placing the tetromino on the board, returning true if it succeeded
