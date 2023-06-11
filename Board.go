@@ -12,6 +12,7 @@ type Board struct {
 	HoveringTetromino *UnplacedTetromino // The tetromino currently hovering over the board
 	IllegalBlocks     [][2]int           // Coordinates the hovering tetromino is above that already have blocks on them
 	Width             int                // Width of the board
+	Height            int                // Height of the board
 	LinesCleared      int                // Number of lines cleared
 	Score             int                // Guess what this might represent
 	Message           string             // Message to display after clearing one or more lines
@@ -29,6 +30,7 @@ func NewBoard(width int, height int) *Board {
 		nil,
 		make([][2]int, 0),
 		width,
+		height,
 		0,
 		0,
 		"",
@@ -37,17 +39,39 @@ func NewBoard(width int, height int) *Board {
 
 // Clear any rows that are full of blocks and update Score/LinesCleared/Message accordingly
 func (board *Board) ClearFullRows() {
-	linesCleared := 0
+	clearRows := []int{}
 	for row, rowBlocks := range board.Blocks {
 		if !slices.Contains(rowBlocks, nil) {
-			board.Blocks[row] = make([]*Block, board.Width)
-			linesCleared++
+			clearRows = append(clearRows, row)
 		}
 	}
 
+	clearCols := []int{}
+	for col := 0; col < board.Width; col++ {
+		verticalClear := true
+		for row := 0; row < board.Height; row++ {
+			if board.Blocks[row][col] == nil {
+				verticalClear = false
+			}
+		}
+		if verticalClear {
+			clearCols = append(clearCols, col)
+		}
+	}
+
+	for _, col := range clearCols {
+		for row := 0; row < board.Height; row++ {
+			board.Blocks[row][col] = nil
+		}
+	}
+	for _, row := range clearRows {
+		board.Blocks[row] = make([]*Block, board.Width)
+	}
+
+	linesCleared := len(clearRows) + len(clearCols)
 	board.LinesCleared += linesCleared
-	board.Score += []int{0, 100, 300, 500, 800}[linesCleared]
-	board.Message = []string{"         ", "Single   ", "Double!  ", "Triple!! ", "Tetris!!!"}[linesCleared]
+	board.Score += []int{0, 100, 300, 500, 800, 1100}[linesCleared]
+	board.Message = []string{"         ", "Single   ", "Double!  ", "Triple!! ", "Tetris!!!", "MOSAIC!!!"}[linesCleared]
 }
 
 // Try placing the tetromino on the board, returning true if it succeeded
