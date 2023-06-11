@@ -1,6 +1,7 @@
 package main
 
 import (
+	"strconv"
 	"strings"
 
 	"golang.org/x/exp/slices"
@@ -10,6 +11,8 @@ type Board struct {
 	Blocks            [][]*Block // height/y/row, width/x/col
 	HoveringTetromino *UnplacedTetromino
 	IllegalBlocks     [][2]int // coordinates the hovering tetromino above that already have blocks on them
+	Width             int
+	LinesCleared      int
 }
 
 func NewBoard(width int, height int) *Board {
@@ -22,15 +25,27 @@ func NewBoard(width int, height int) *Board {
 		blocks,
 		nil,
 		make([][2]int, 0),
+		width,
+		0,
 	}
 }
 
-func (board Board) PlaceTetromino(tetromino *UnplacedTetromino) bool {
+func (board *Board) ClearFullRows() {
+	for row, rowBlocks := range board.Blocks {
+		if !slices.Contains(rowBlocks, nil) {
+			board.Blocks[row] = make([]*Block, board.Width)
+			board.LinesCleared++
+		}
+	}
+}
+
+func (board *Board) PlaceTetromino(tetromino *UnplacedTetromino) bool {
 	if len(board.IllegalBlocks) == 0 {
 		for _, blockXY := range tetromino.BlockGlobalXYs() {
 			x, y := blockXY[0], blockXY[1]
 			board.Blocks[y][x] = NewBlock(tetromino.Color, "@")
 		}
+		board.ClearFullRows()
 		return true
 	}
 	return false
@@ -69,5 +84,5 @@ func (board Board) String() string {
 		}
 	}
 
-	return strings.Join(rows, "\n")
+	return strings.Join(rows, "\n") + "\n Lines cleared:" + strconv.Itoa(board.LinesCleared)
 }
