@@ -1,4 +1,4 @@
-module mosaictetris
+module github.com/pilosophos/mosaic-tetris
 
 go 1.20
 
