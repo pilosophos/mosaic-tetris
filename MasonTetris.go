@@ -50,13 +50,11 @@ func main() {
 			if tetrominoPlaced {
 				hoveringTetromino = tetrominoQueue.Pop()
 			}
-		case tick := <-tickTimer:
-			if tick {
-				timeleft := hoveringTetromino.Tick()
-				if timeleft == 0 {
-					board.PlaceTetromino(hoveringTetromino)
-					hoveringTetromino = tetrominoQueue.Pop()
-				}
+		case <-tickTimer:
+			timeleft := hoveringTetromino.Tick()
+			if timeleft == 0 {
+				board.PlaceTetromino(hoveringTetromino)
+				hoveringTetromino = tetrominoQueue.Pop()
 			}
 		}
 	}
