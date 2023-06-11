@@ -26,7 +26,7 @@ func (tq *TetrominoQueue) RefreshQueue() {
 
 	tetrominoShapes := []*UnplacedTetromino{
 		NewUnplacedTetromino([][2]int{{0, 0}, {1, 0}, {2, 0}, {3, 0}}, startLoc, startTime, "\033[1;36m"), // I (cyan)
-		NewUnplacedTetromino([][2]int{{0, 0}, {1, 0}, {0, 1}, {1, 1}}, startLoc, startTime, "\033[1;33m"), // O (yellow)
+		NewUnplacedTetromino([][2]int{{0, 0}, {1, 0}, {0, 1}, {1, 1}}, startLoc, startTime, "\033[1;37m"), // O (yellow)
 		NewUnplacedTetromino([][2]int{{0, 0}, {1, 0}, {2, 0}, {1, 1}}, startLoc, startTime, "\033[1;35m"), // T (magenta)
 		NewUnplacedTetromino([][2]int{{1, 0}, {1, 1}, {1, 2}, {0, 2}}, startLoc, startTime, "\033[1;34m"), // J (blue)
 		NewUnplacedTetromino([][2]int{{0, 0}, {0, 1}, {1, 2}, {0, 2}}, startLoc, startTime, "\033[1;33m"), // L (orange)
