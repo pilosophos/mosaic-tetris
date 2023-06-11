@@ -56,6 +56,7 @@ func main() {
 				tetrominoPlaced := board.PlaceTetromino(hoveringTetromino)
 				if !tetrominoPlaced {
 					fmt.Println("You lose!")
+					_ = keyboard.Close()
 					os.Exit(0)
 				}
 				hoveringTetromino = tetrominoQueue.Pop()
@@ -74,6 +75,7 @@ func tickGameForever(tick chan bool) {
 func handleKeypress(key keyboard.Key, hoveringTetromino *UnplacedTetromino, board *Board) (placed bool) {
 	switch key {
 	case keyboard.KeyEsc:
+		_ = keyboard.Close()
 		os.Exit(0)
 	case keyboard.KeyArrowLeft:
 		hoveringTetromino.Translate(-1, 0, BoardSizeW, BoardSizeH)
