@@ -11,15 +11,20 @@ type UnplacedTetromino struct {
 	TopLeftXY        [2]int
 	TimeLeft         int
 	Color            string
+	Width            int
+	Height           int
 }
 
-func NewUnplacedTetromino(blocksRelativeXY [][2]int, topLeftXY [2]int, timeLeft int, color string) *UnplacedTetromino {
-	return &UnplacedTetromino{
+func NewUnplacedTetromino(blocksRelativeXY [][2]int, topLeftXY [2]int, timeLeft int, color string) (tetromino *UnplacedTetromino) {
+	tetromino = &UnplacedTetromino{
 		blocksRelativeXY,
 		topLeftXY,
 		timeLeft,
 		color,
+		0, 0,
 	}
+	tetromino.ComputeDimensions()
+	return tetromino
 }
 
 func (tetromino *UnplacedTetromino) Tick() int {
@@ -39,9 +44,25 @@ func (tetromino UnplacedTetromino) BlockGlobalXYs() (globalXYs [][2]int) {
 	return globalXYs
 }
 
-func (tetromino *UnplacedTetromino) Translate(dx int, dy int) {
-	tetromino.TopLeftXY[0] += dx
-	tetromino.TopLeftXY[1] += dy
+func (tetromino *UnplacedTetromino) Translate(dx int, dy int, boardWidth int, boardHeight int) {
+	xlimit := boardWidth - tetromino.Width
+	ylimit := boardHeight - tetromino.Height
+
+	newx := tetromino.TopLeftXY[0] + dx
+	if newx < 0 {
+		newx = 0
+	} else if newx > xlimit {
+		newx = xlimit
+	}
+	tetromino.TopLeftXY[0] = newx
+
+	newy := tetromino.TopLeftXY[1] + dy
+	if newy < 0 {
+		newy = 0
+	} else if newy > ylimit {
+		newy = ylimit
+	}
+	tetromino.TopLeftXY[1] = newy
 }
 
 func (tetromino UnplacedTetromino) BlockString() string {
@@ -50,12 +71,48 @@ func (tetromino UnplacedTetromino) BlockString() string {
 
 func (tetromino *UnplacedTetromino) Rotate(angleDegrees int) {
 	angle := float64(angleDegrees) * math.Pi / 180
+	xmin := 0
+	ymin := 0
 	for i, xy := range tetromino.BlockRelativeXYs {
-		tetromino.BlockRelativeXYs[i] = [2]int{
-			int(math.Cos(angle))*xy[0] - int(math.Sin(angle))*xy[1],
-			int(math.Sin(angle))*xy[0] + int(math.Cos(angle))*xy[1],
+		newx := int(math.Cos(angle))*xy[0] - int(math.Sin(angle))*xy[1]
+		newy := int(math.Sin(angle))*xy[0] + int(math.Cos(angle))*xy[1]
+		tetromino.BlockRelativeXYs[i] = [2]int{newx, newy}
+
+		if newx < xmin {
+			xmin = newx
+		}
+		if newy < ymin {
+			ymin = newy
 		}
 	}
+
+	// keep all coordinates positive
+	for i := range tetromino.BlockRelativeXYs {
+		if xmin < 0 {
+			tetromino.BlockRelativeXYs[i][0] += -xmin
+		}
+		if ymin < 0 {
+			tetromino.BlockRelativeXYs[i][1] += -ymin
+		}
+	}
+
+	tetromino.ComputeDimensions()
+}
+
+func (tetromino *UnplacedTetromino) ComputeDimensions() {
+	xmax := 0
+	ymax := 0
+
+	for _, xy := range tetromino.BlockRelativeXYs {
+		if xy[0] > xmax {
+			xmax = xy[0]
+		}
+		if xy[1] > ymax {
+			ymax = xy[1]
+		}
+	}
+	tetromino.Width = xmax + 1
+	tetromino.Height = ymax + 1
 }
 
 func (tetromino UnplacedTetromino) String() string {
@@ -74,7 +131,7 @@ func (tetromino UnplacedTetromino) String() string {
 
 	rows := make([]string, 4)
 	for x := range squares {
-		rows[x] = strings.Join(squares[x][:], "")
+		rows[x] = strings.Join(squares[x][:], " ")
 	}
 
 	return strings.Join(rows, "\n")

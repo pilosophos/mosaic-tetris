@@ -43,7 +43,7 @@ func (board *Board) PlaceTetromino(tetromino *UnplacedTetromino) bool {
 	if len(board.IllegalBlocks) == 0 {
 		for _, blockXY := range tetromino.BlockGlobalXYs() {
 			x, y := blockXY[0], blockXY[1]
-			board.Blocks[y][x] = NewBlock(tetromino.Color, "@")
+			board.Blocks[y][x] = NewBlock(tetromino.Color, "▅")
 		}
 		board.ClearFullRows()
 		return true

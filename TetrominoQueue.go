@@ -12,7 +12,14 @@ func NewTetrominoQueue() *TetrominoQueue {
 	}
 }
 
-func (tq *TetrominoQueue) Next() (nextTetromino *UnplacedTetromino) {
+func (tq *TetrominoQueue) Peek() (nextTetromino *UnplacedTetromino) {
+	if len(tq.Queue) == 0 {
+		tq.RefreshQueue()
+	}
+	return tq.Queue[0]
+}
+
+func (tq *TetrominoQueue) Pop() (nextTetromino *UnplacedTetromino) {
 	if len(tq.Queue) == 0 {
 		tq.RefreshQueue()
 	}
