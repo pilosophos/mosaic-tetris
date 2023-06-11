@@ -1,0 +1,38 @@
+	// screen.Clear()
+	// screen.MoveTopLeft()
+
+	tet := NewUnplacedTetromino(
+		[][2]int{
+			{0, 0},
+			{0, 1},
+			{0, 2},
+			{1, 0},
+		},
+		[2]int{0, 0},
+		4,
+		"\033[1;34m",
+	)
+
+	tet2 := NewUnplacedTetromino(
+		[][2]int{
+			{0, 0},
+			{0, 1},
+			{0, 2},
+			{1, 0},
+		},
+		[2]int{1, 0},
+		4,
+		"\033[1;34m",
+	)
+	fmt.Println(tet)
+
+	board := NewBoard(BoardSizeW, BoardSizeH)
+	board.PlaceTetromino(tet)
+	board.HoverTetromino(tet2)
+
+	fmt.Println(board)
+
+	tet2.Translate(1, 0)
+	board.HoverTetromino(tet2)
+
+	fmt.Println(board)
