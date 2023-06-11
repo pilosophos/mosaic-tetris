@@ -14,6 +14,7 @@ type Board struct {
 	Width             int
 	LinesCleared      int
 	Score             int
+	Message           string
 }
 
 func NewBoard(width int, height int) *Board {
@@ -29,6 +30,7 @@ func NewBoard(width int, height int) *Board {
 		width,
 		0,
 		0,
+		"fgsd",
 	}
 }
 
@@ -43,6 +45,7 @@ func (board *Board) ClearFullRows() {
 
 	board.LinesCleared += linesCleared
 	board.Score += []int{0, 100, 300, 500, 800}[linesCleared]
+	board.Message = []string{"         ", "Single", "Double", "Triple", "Tetris!"}[linesCleared]
 }
 
 func (board *Board) PlaceTetromino(tetromino *UnplacedTetromino) bool {
@@ -91,5 +94,9 @@ func (board Board) String() string {
 		}
 	}
 
-	return strings.Join(rows, "\n") + "\nLines cleared: " + strconv.Itoa(board.LinesCleared) + "\nScore: " + strconv.Itoa(board.Score)
+	rows = append(rows, "Lines\t"+strconv.Itoa(board.LinesCleared))
+	rows = append(rows, "Score\t"+strconv.Itoa(board.Score))
+	rows = append(rows, board.Message)
+
+	return strings.Join(rows, "\n")
 }
