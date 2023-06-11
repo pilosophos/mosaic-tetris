@@ -53,7 +53,11 @@ func main() {
 		case <-tickTimer:
 			timeleft := hoveringTetromino.Tick()
 			if timeleft == 0 {
-				board.PlaceTetromino(hoveringTetromino)
+				tetrominoPlaced := board.PlaceTetromino(hoveringTetromino)
+				if !tetrominoPlaced {
+					fmt.Println("You lose!")
+					os.Exit(0)
+				}
 				hoveringTetromino = tetrominoQueue.Pop()
 			}
 		}

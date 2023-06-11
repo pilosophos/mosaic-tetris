@@ -13,6 +13,7 @@ type Board struct {
 	IllegalBlocks     [][2]int // coordinates the hovering tetromino above that already have blocks on them
 	Width             int
 	LinesCleared      int
+	Score             int
 }
 
 func NewBoard(width int, height int) *Board {
@@ -27,16 +28,21 @@ func NewBoard(width int, height int) *Board {
 		make([][2]int, 0),
 		width,
 		0,
+		0,
 	}
 }
 
 func (board *Board) ClearFullRows() {
+	linesCleared := 0
 	for row, rowBlocks := range board.Blocks {
 		if !slices.Contains(rowBlocks, nil) {
 			board.Blocks[row] = make([]*Block, board.Width)
-			board.LinesCleared++
+			linesCleared++
 		}
 	}
+
+	board.LinesCleared += linesCleared
+	board.Score += []int{0, 100, 300, 500, 800}[linesCleared]
 }
 
 func (board *Board) PlaceTetromino(tetromino *UnplacedTetromino) bool {
@@ -45,6 +51,7 @@ func (board *Board) PlaceTetromino(tetromino *UnplacedTetromino) bool {
 			x, y := blockXY[0], blockXY[1]
 			board.Blocks[y][x] = NewBlock(tetromino.Color, "▅")
 		}
+		board.Score += 2 * (tetromino.TimeLeft + 1)
 		board.ClearFullRows()
 		return true
 	}
@@ -84,5 +91,5 @@ func (board Board) String() string {
 		}
 	}
 
-	return strings.Join(rows, "\n") + "\n Lines cleared:" + strconv.Itoa(board.LinesCleared)
+	return strings.Join(rows, "\n") + "\nLines cleared: " + strconv.Itoa(board.LinesCleared) + "\nScore: " + strconv.Itoa(board.Score)
 }
