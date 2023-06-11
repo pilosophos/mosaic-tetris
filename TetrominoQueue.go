@@ -40,5 +40,10 @@ func (tq *TetrominoQueue) RefreshQueue() {
 		tetrominoShapes[i], tetrominoShapes[j] = tetrominoShapes[j], tetrominoShapes[i]
 	}
 
+	// rotate them a random amount of times
+	for _, tetromino := range tetrominoShapes {
+		tetromino.Rotate(90 * rand.Intn(4))
+	}
+
 	tq.Queue = tetrominoShapes
 }

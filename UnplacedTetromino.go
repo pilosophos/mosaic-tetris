@@ -1,6 +1,7 @@
 package main
 
 import (
+	"math"
 	"strconv"
 	"strings"
 )
@@ -45,6 +46,16 @@ func (tetromino *UnplacedTetromino) Translate(dx int, dy int) {
 
 func (tetromino UnplacedTetromino) BlockString() string {
 	return tetromino.Color + strconv.Itoa(tetromino.TimeLeft) + "\033[0m"
+}
+
+func (tetromino *UnplacedTetromino) Rotate(angleDegrees int) {
+	angle := float64(angleDegrees) * math.Pi / 180
+	for i, xy := range tetromino.BlockRelativeXYs {
+		tetromino.BlockRelativeXYs[i] = [2]int{
+			int(math.Cos(angle))*xy[0] - int(math.Sin(angle))*xy[1],
+			int(math.Sin(angle))*xy[0] + int(math.Cos(angle))*xy[1],
+		}
+	}
 }
 
 func (tetromino UnplacedTetromino) String() string {
