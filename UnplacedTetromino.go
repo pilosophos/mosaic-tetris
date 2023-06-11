@@ -21,7 +21,7 @@ func NewUnplacedTetromino(blocksRelativeXY [][2]int, topLeftXY [2]int, timeLeft 
 		blocksRelativeXY,
 		topLeftXY,
 		timeLeft,
-		"",
+		color,
 		0, 0,
 	}
 	tetromino.ComputeDimensions()

@@ -48,7 +48,8 @@ func main() {
 		s.Show()
 		drawText(s, 0, 0, defStyle, "NEXT")
 		drawText(s, 0, 1, defStyle, tetrominoQueue.Peek().String())
-		drawText(s, 0, 4+1, defStyle, board.String())
+		// drawText(s, 0, 4+1, defStyle, board.String())
+		board.Render(s, defStyle, drawText, 0, 4+1)
 
 		select {
 		case <-tickTimer:

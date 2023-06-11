@@ -2,8 +2,8 @@ package main
 
 import (
 	"strconv"
-	"strings"
 
+	"github.com/gdamore/tcell/v2"
 	"golang.org/x/exp/slices"
 )
 
@@ -78,32 +78,31 @@ func (board *Board) HoverTetromino(tetromino *UnplacedTetromino) {
 	}
 }
 
-// Get a string representation of the board
-func (board Board) String() string {
-	rows := []string{}
+type drawTextFunc func(tcell.Screen, int, int, tcell.Style, string)
 
+// Render the board on the screen
+func (board Board) Render(s tcell.Screen, defaultStyle tcell.Style, drawText drawTextFunc, topLeftX, topLeftY int) {
+	// rows := []string{}
+
+	cursorY := topLeftY
 	for y, row := range board.Blocks {
-		rows = append(rows, "")
+		s.SetContent(topLeftX, y+topLeftY, ' ', nil, defaultStyle)
 
 		for x, block := range row {
 			if slices.Contains(board.IllegalBlocks, [2]int{x, y}) {
-				// rows[y] += "\033[1;31m" + "X" + "\033[0m"
-				rows[y] += "X"
+				s.SetContent((x*2)+topLeftX, y+topLeftY, 'X', nil, defaultStyle)
 			} else if board.HoveringTetromino != nil && slices.Contains(board.HoveringTetromino.BlockGlobalXYs(), [2]int{x, y}) {
-				rows[y] += board.HoveringTetromino.BlockString()
+				s.SetContent((x*2)+topLeftX, y+topLeftY, []rune(board.HoveringTetromino.BlockString())[0], nil, defaultStyle)
 			} else if block == nil {
-				rows[y] += "."
+				s.SetContent((x*2)+topLeftX, y+topLeftY, '.', nil, defaultStyle)
 			} else {
-				rows[y] += block.String()
+				s.SetContent((x*2)+topLeftX, y+topLeftY, []rune(block.String())[0], nil, defaultStyle)
 			}
-
-			rows[y] += " "
 		}
+		cursorY = y + topLeftY
 	}
 
-	rows = append(rows, "Lines\t"+strconv.Itoa(board.LinesCleared))
-	rows = append(rows, "Score\t"+strconv.Itoa(board.Score))
-	rows = append(rows, board.Message)
-
-	return strings.Join(rows, "\n")
+	drawText(s, 0, cursorY+1, defaultStyle, "Lines\t"+strconv.Itoa(board.LinesCleared))
+	drawText(s, 0, cursorY+2, defaultStyle, "Score\t"+strconv.Itoa(board.Score))
+	drawText(s, 0, cursorY+3, defaultStyle, board.Message)
 }
