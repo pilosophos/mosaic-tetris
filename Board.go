@@ -55,7 +55,7 @@ func (board *Board) PlaceTetromino(tetromino *UnplacedTetromino) bool {
 	if len(board.IllegalBlocks) == 0 {
 		for _, blockXY := range tetromino.BlockGlobalXYs() {
 			x, y := blockXY[0], blockXY[1]
-			board.Blocks[y][x] = NewBlock(tetromino.Color, "▅")
+			board.Blocks[y][x] = NewBlock(tetromino.Color, '▅')
 		}
 		board.Score += 2 * (tetromino.TimeLeft + 1)
 		board.ClearFullRows()
@@ -82,7 +82,15 @@ type drawTextFunc func(tcell.Screen, int, int, tcell.Style, string)
 
 // Render the board on the screen
 func (board Board) Render(s tcell.Screen, defaultStyle tcell.Style, drawText drawTextFunc, topLeftX, topLeftY int) {
-	// rows := []string{}
+	colors := map[string]tcell.Style{
+		"cyan":    tcell.StyleDefault.Foreground(tcell.ColorAqua),
+		"white":   tcell.StyleDefault.Foreground(tcell.ColorWhite),
+		"magenta": tcell.StyleDefault.Foreground(tcell.ColorFuchsia),
+		"blue":    tcell.StyleDefault.Foreground(tcell.ColorBlue),
+		"yellow":  tcell.StyleDefault.Foreground(tcell.ColorYellow),
+		"green":   tcell.StyleDefault.Foreground(tcell.ColorGreen),
+		"red":     tcell.StyleDefault.Foreground(tcell.ColorRed),
+	}
 
 	cursorY := topLeftY
 	for y, row := range board.Blocks {
@@ -90,13 +98,13 @@ func (board Board) Render(s tcell.Screen, defaultStyle tcell.Style, drawText dra
 
 		for x, block := range row {
 			if slices.Contains(board.IllegalBlocks, [2]int{x, y}) {
-				s.SetContent((x*2)+topLeftX, y+topLeftY, 'X', nil, defaultStyle)
+				s.SetContent((x*2)+topLeftX, y+topLeftY, 'X', nil, colors["red"])
 			} else if board.HoveringTetromino != nil && slices.Contains(board.HoveringTetromino.BlockGlobalXYs(), [2]int{x, y}) {
-				s.SetContent((x*2)+topLeftX, y+topLeftY, []rune(board.HoveringTetromino.BlockString())[0], nil, defaultStyle)
+				s.SetContent((x*2)+topLeftX, y+topLeftY, board.HoveringTetromino.BlockRune(), nil, colors[board.HoveringTetromino.Color])
 			} else if block == nil {
 				s.SetContent((x*2)+topLeftX, y+topLeftY, '.', nil, defaultStyle)
 			} else {
-				s.SetContent((x*2)+topLeftX, y+topLeftY, []rune(block.String())[0], nil, defaultStyle)
+				s.SetContent((x*2)+topLeftX, y+topLeftY, block.Rune(), nil, colors[block.Color])
 			}
 		}
 		cursorY = y + topLeftY

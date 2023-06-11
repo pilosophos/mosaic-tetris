@@ -39,13 +39,13 @@ func (tq *TetrominoQueue) RefreshQueue() {
 	startTime := 4
 
 	tetrominoShapes := []*UnplacedTetromino{
-		NewUnplacedTetromino([][2]int{{0, 0}, {1, 0}, {2, 0}, {3, 0}}, startLoc, startTime, "\033[1;36m"), // I (cyan)
-		NewUnplacedTetromino([][2]int{{0, 0}, {1, 0}, {0, 1}, {1, 1}}, startLoc, startTime, "\033[1;37m"), // O (white)
-		NewUnplacedTetromino([][2]int{{0, 0}, {1, 0}, {2, 0}, {1, 1}}, startLoc, startTime, "\033[1;35m"), // T (magenta)
-		NewUnplacedTetromino([][2]int{{1, 0}, {1, 1}, {1, 2}, {0, 2}}, startLoc, startTime, "\033[1;34m"), // J (blue)
-		NewUnplacedTetromino([][2]int{{0, 0}, {0, 1}, {1, 2}, {0, 2}}, startLoc, startTime, "\033[1;33m"), // L (yellow)
-		NewUnplacedTetromino([][2]int{{0, 1}, {1, 1}, {1, 0}, {2, 0}}, startLoc, startTime, "\033[1;32m"), // S (green)
-		NewUnplacedTetromino([][2]int{{0, 0}, {1, 0}, {1, 1}, {2, 1}}, startLoc, startTime, "\033[1;31m"), // Z (red)
+		NewUnplacedTetromino([][2]int{{0, 0}, {1, 0}, {2, 0}, {3, 0}}, startLoc, startTime, "cyan"),    // I (cyan)
+		NewUnplacedTetromino([][2]int{{0, 0}, {1, 0}, {0, 1}, {1, 1}}, startLoc, startTime, "white"),   // O (white)
+		NewUnplacedTetromino([][2]int{{0, 0}, {1, 0}, {2, 0}, {1, 1}}, startLoc, startTime, "magenta"), // T (magenta)
+		NewUnplacedTetromino([][2]int{{1, 0}, {1, 1}, {1, 2}, {0, 2}}, startLoc, startTime, "blue"),    // J (blue)
+		NewUnplacedTetromino([][2]int{{0, 0}, {0, 1}, {1, 2}, {0, 2}}, startLoc, startTime, "yellow"),  // L (yellow)
+		NewUnplacedTetromino([][2]int{{0, 1}, {1, 1}, {1, 0}, {2, 0}}, startLoc, startTime, "green"),   // S (green)
+		NewUnplacedTetromino([][2]int{{0, 0}, {1, 0}, {1, 1}, {2, 1}}, startLoc, startTime, "red"),     // Z (red)
 	}
 
 	// shuffle tetromino shapes randomly

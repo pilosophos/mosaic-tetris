@@ -68,9 +68,9 @@ func (tetromino *UnplacedTetromino) Translate(dx int, dy int, boardWidth int, bo
 	tetromino.TopLeftXY[1] = newy
 }
 
-// Get the string representation of one of this tetromino's blocks
-func (tetromino UnplacedTetromino) BlockString() string {
-	return strconv.Itoa(tetromino.TimeLeft)
+// Get the rune representation of one of this tetromino's blocks
+func (tetromino UnplacedTetromino) BlockRune() rune {
+	return []rune(strconv.Itoa(tetromino.TimeLeft))[0]
 }
 
 // Rotate the tetromino by some number of degrees about (0, 0)
@@ -134,7 +134,7 @@ func (tetromino UnplacedTetromino) String() string {
 
 	for _, blockXY := range tetromino.BlockRelativeXYs {
 		x, y := blockXY[0], blockXY[1]
-		squares[y][x] = tetromino.BlockString()
+		squares[y][x] = string(tetromino.BlockRune())
 	}
 
 	rows := make([]string, 4)
