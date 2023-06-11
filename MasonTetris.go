@@ -48,7 +48,11 @@ func main() {
 			}
 		case tick := <-tickTimer:
 			if tick {
-				hoveringTetromino.Tick()
+				timeleft := hoveringTetromino.Tick()
+				if timeleft == 0 {
+					board.PlaceTetromino(hoveringTetromino)
+					hoveringTetromino = tetrominoQueue.Next()
+				}
 			}
 		}
 	}
