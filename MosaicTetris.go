@@ -52,7 +52,7 @@ func main() {
 		board.Render(s, defStyle, drawText, 0, 0)
 		drawText(s, 0, BoardSizeH+3, defStyle, "Move = WASD/Arrow keys")
 		drawText(s, 0, BoardSizeH+4, defStyle, "Hard drop = Space")
-		drawText(s, 0, BoardSizeH+5, defStyle, "Quit = Esc/Ctrl+C")
+		drawText(s, 0, BoardSizeH+5, defStyle, "Quit = Esc/Ctrl+C/q")
 
 		select {
 		case <-tickTimer:
