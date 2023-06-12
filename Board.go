@@ -117,13 +117,13 @@ type drawTextFunc func(tcell.Screen, int, int, tcell.Style, string)
 // Render the board on the screen
 func (board Board) Render(s tcell.Screen, defaultStyle tcell.Style, drawText drawTextFunc, topLeftX, topLeftY int) {
 	colors := map[string]tcell.Style{
-		"cyan":    tcell.StyleDefault.Foreground(tcell.ColorAqua),
-		"white":   tcell.StyleDefault.Foreground(tcell.ColorWhite),
-		"magenta": tcell.StyleDefault.Foreground(tcell.ColorFuchsia),
-		"blue":    tcell.StyleDefault.Foreground(tcell.ColorBlue),
-		"yellow":  tcell.StyleDefault.Foreground(tcell.ColorYellow),
-		"green":   tcell.StyleDefault.Foreground(tcell.ColorGreen),
-		"red":     tcell.StyleDefault.Foreground(tcell.ColorRed),
+		"cyan":    defaultStyle.Foreground(tcell.ColorAqua),
+		"white":   defaultStyle.Foreground(tcell.ColorWhite),
+		"magenta": defaultStyle.Foreground(tcell.ColorFuchsia),
+		"blue":    defaultStyle.Foreground(tcell.ColorBlue),
+		"yellow":  defaultStyle.Foreground(tcell.ColorYellow),
+		"green":   defaultStyle.Foreground(tcell.ColorGreen),
+		"red":     defaultStyle.Foreground(tcell.ColorRed),
 	}
 
 	cursorY := topLeftY
