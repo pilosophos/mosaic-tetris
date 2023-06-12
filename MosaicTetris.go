@@ -25,7 +25,7 @@ func main() {
 		os.Exit(0)
 	}
 
-	defStyle := tcell.StyleDefault.Background(tcell.ColorReset).Foreground(tcell.ColorReset)
+	defStyle := tcell.StyleDefault.Background(tcell.ColorBlack).Foreground(tcell.ColorWhite)
 	s.SetStyle(defStyle)
 	s.Clear()
 
