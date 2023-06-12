@@ -48,6 +48,7 @@ func main() {
 		s.Show()
 		drawText(s, (BoardSizeW*2)+2, 1, defStyle, "NEXT")
 		drawText(s, (BoardSizeW*2)+2, 2, defStyle, tetrominoQueue.Peek().String())
+		drawText(s, (BoardSizeW*2)+2, BoardSizeH/2, defStyle, board.Message)
 		board.Render(s, defStyle, drawText, 0, 0)
 		drawText(s, 0, BoardSizeH+3, defStyle, "Move = WASD/Arrow keys")
 		drawText(s, 0, BoardSizeH+4, defStyle, "Hard drop = Space")
@@ -58,6 +59,7 @@ func main() {
 			timeleft := hoveringTetromino.Tick()
 			if timeleft == 0 {
 				tetrominoPlaced := board.PlaceTetromino(hoveringTetromino)
+				s.Beep()
 				if !tetrominoPlaced {
 					fmt.Println("You lose!")
 					fmt.Println("Press q to quit!")
@@ -72,6 +74,7 @@ func main() {
 			case *tcell.EventKey:
 				placed := handleKeypress(ev, quit, hoveringTetromino, board)
 				if placed {
+					s.Beep()
 					hoveringTetromino = tetrominoQueue.Pop()
 				}
 			}

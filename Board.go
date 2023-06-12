@@ -146,5 +146,4 @@ func (board Board) Render(s tcell.Screen, defaultStyle tcell.Style, drawText dra
 
 	drawText(s, 0, cursorY+1, defaultStyle, "Lines\t"+strconv.Itoa(board.LinesCleared))
 	drawText(s, 0, cursorY+2, defaultStyle, "Score\t"+strconv.Itoa(board.Score))
-	drawText(s, 0, cursorY+3, defaultStyle, board.Message)
 }
