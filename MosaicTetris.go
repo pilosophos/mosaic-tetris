@@ -60,9 +60,8 @@ func main() {
 				tetrominoPlaced := board.PlaceTetromino(hoveringTetromino)
 				if !tetrominoPlaced {
 					fmt.Println("You lose!")
-					fmt.Println("Press any key to quit!")
-					s.PollEvent()
-					quit()
+					fmt.Println("Press q to quit!")
+					waitForQuit(s, quit)
 				}
 				hoveringTetromino = tetrominoQueue.Pop()
 			}
@@ -85,6 +84,17 @@ func tickGameForever(tick chan bool) {
 	for {
 		time.Sleep(1 * time.Second)
 		tick <- true
+	}
+}
+
+func waitForQuit(s tcell.Screen, quit func()) {
+	for {
+		ev := s.PollEvent()
+		if ev, ok := ev.(*tcell.EventKey); ok {
+			if ev.Key() == tcell.KeyCtrlC || ev.Rune() == 'q' {
+				quit()
+			}
+		}
 	}
 }
 
