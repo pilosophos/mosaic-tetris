@@ -94,7 +94,7 @@ func waitForQuit(s tcell.Screen, quit func()) {
 	for {
 		ev := s.PollEvent()
 		if ev, ok := ev.(*tcell.EventKey); ok {
-			if ev.Key() == tcell.KeyCtrlC || ev.Rune() == 'q' {
+			if ev.Key() == tcell.KeyCtrlC || ev.Key() == tcell.KeyEsc || ev.Rune() == 'q' {
 				quit()
 			}
 		}
@@ -117,6 +117,7 @@ func handleKeypress(eventKey *tcell.EventKey, quit func(), hoveringTetromino *Un
 		rune('a'): "left",
 		rune('s'): "down",
 		rune('d'): "right",
+		rune('q'): "quit",
 	}
 
 	action, actionFound := specialKeys[eventKey.Key()]
