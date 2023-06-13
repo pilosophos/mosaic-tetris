@@ -70,6 +70,9 @@ func main() {
 		drawText(s, 0, BoardSizeH+3, defStyle, "Move = WASD/Arrow keys")
 		drawText(s, 0, BoardSizeH+4, defStyle, "Hard drop = Space")
 		drawText(s, 0, BoardSizeH+5, defStyle, "Quit = Esc/Ctrl+C/q")
+		drawText(s, 0, BoardSizeH+7, defStyle, "HOW TO PLAY:")
+		drawText(s, 0, BoardSizeH+8, defStyle, "Tetris pieces come randomly rotated in the center")
+		drawText(s, 0, BoardSizeH+9, defStyle, "Clear horizontal (or vertical) lines for more points")
 
 		select {
 		case <-tickTimer:

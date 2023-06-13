@@ -1,15 +1,20 @@
 package main
 
-import "math/rand"
+import (
+	"math/rand"
+	"time"
+)
 
 type TetrominoQueue struct {
 	Queue []*UnplacedTetromino
+	RNG   rand.Source
 }
 
 // Create a new tetromino queue
 func NewTetrominoQueue() *TetrominoQueue {
 	return &TetrominoQueue{
 		[]*UnplacedTetromino{},
+		rand.NewSource(time.Now().Unix()),
 	}
 }
 
