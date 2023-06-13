@@ -42,7 +42,7 @@ func main() {
 	}
 
 	// set up TUI
-	defStyle := tcell.StyleDefault.Background(tcell.ColorBlack).Foreground(tcell.ColorWhite)
+	defStyle := tcell.StyleDefault.Background(tcell.Color16.TrueColor()).Foreground(tcell.ColorWhite)
 	s.SetStyle(defStyle)
 	s.Clear()
 
