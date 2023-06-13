@@ -1,9 +1,13 @@
 package main
 
 import (
+	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"os"
+	"os/user"
+	"path/filepath"
 	"time"
 
 	"github.com/gdamore/tcell/v2"
@@ -11,6 +15,13 @@ import (
 
 const BoardSizeW = 10
 const BoardSizeH = 20
+
+type Highscore struct {
+	Score int
+	Lines int
+	Date  int64
+	Name  string
+}
 
 func main() {
 	s, err := tcell.NewScreen()
@@ -23,6 +34,11 @@ func main() {
 	quit := func() {
 		s.Fini()
 		os.Exit(0)
+	}
+
+	var highscorePath string
+	if home, err := os.UserHomeDir(); err == nil {
+		highscorePath = filepath.Join(home, ".mosaic-tetris-highscore.json")
 	}
 
 	// set up TUI
@@ -62,9 +78,7 @@ func main() {
 				tetrominoPlaced := board.PlaceTetromino(hoveringTetromino)
 				s.Beep()
 				if !tetrominoPlaced {
-					fmt.Println("You lose!")
-					fmt.Println("Press q to quit!")
-					waitForQuit(s, quit)
+					gameOver(board.Score, board.LinesCleared, highscorePath, s, quit)
 				}
 				hoveringTetromino = tetrominoQueue.Pop()
 			}
@@ -82,6 +96,56 @@ func main() {
 		default: // pass
 		}
 	}
+}
+
+// Check if the current score is a high score, and if so, save the file
+// Returns true if a new high score was saved
+func saveHighscore(score, lines int, highscorePath string) bool {
+	shouldWriteHighscore := false
+	var highscore Highscore
+
+	if highscorePath != "" {
+		if _, err := os.Stat(highscorePath); errors.Is(err, os.ErrNotExist) {
+			shouldWriteHighscore = true
+		} else if content, err := os.ReadFile(highscorePath); err == nil {
+			if err := json.Unmarshal(content, &highscore); err == nil {
+				shouldWriteHighscore = score > highscore.Score
+			}
+		}
+	}
+
+	if shouldWriteHighscore {
+		highscore.Score = score
+		highscore.Lines = lines
+		highscore.Date = time.Now().Unix()
+
+		if currentUser, err := user.Current(); err == nil {
+			highscore.Name = currentUser.Username
+		} else {
+			highscore.Name = "Player"
+		}
+
+		if fileData, err := json.Marshal(highscore); err == nil {
+			if f, err := os.Create(highscorePath); err == nil {
+				f.Write(fileData)
+				return true
+			}
+		}
+	}
+
+	return false
+}
+
+// Enter the game over state, writing the highscore if needed and prompting the user for a quit
+func gameOver(score, lines int, highscorePath string, s tcell.Screen, quit func()) {
+	highscoreSaved := saveHighscore(score, lines, highscorePath)
+	if highscoreSaved {
+		fmt.Println("New highscore!")
+	} else {
+		fmt.Println("You lose!")
+	}
+	fmt.Println("Press q to quit!")
+	waitForQuit(s, quit)
 }
 
 // Run the global tick timer
