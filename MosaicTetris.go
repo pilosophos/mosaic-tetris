@@ -25,22 +25,23 @@ func main() {
 		os.Exit(0)
 	}
 
+	// set up TUI
 	defStyle := tcell.StyleDefault.Background(tcell.ColorBlack).Foreground(tcell.ColorWhite)
 	s.SetStyle(defStyle)
 	s.Clear()
 
-	tetrominoQueue := NewTetrominoQueue()
-	hoveringTetromino := tetrominoQueue.Pop()
-
-	board := NewBoard(BoardSizeW, BoardSizeH)
+	termEvents := make(chan tcell.Event)
+	tcellQuit := make(chan struct{})
+	go s.ChannelEvents(termEvents, tcellQuit)
 
 	// start global tick timer
 	tickTimer := make(chan bool)
 	go tickGameForever(tickTimer)
 
-	termEvents := make(chan tcell.Event)
-	tcellQuit := make(chan struct{})
-	go s.ChannelEvents(termEvents, tcellQuit)
+	// set up the game
+	tetrominoQueue := NewTetrominoQueue()
+	hoveringTetromino := tetrominoQueue.Pop()
+	board := NewBoard(BoardSizeW, BoardSizeH)
 
 	for {
 		board.HoverTetromino(hoveringTetromino)
@@ -83,6 +84,7 @@ func main() {
 	}
 }
 
+// Run the global tick timer
 func tickGameForever(tick chan bool) {
 	for {
 		time.Sleep(1 * time.Second)
@@ -90,6 +92,7 @@ func tickGameForever(tick chan bool) {
 	}
 }
 
+// Hang the program until a quit key is pressed
 func waitForQuit(s tcell.Screen, quit func()) {
 	for {
 		ev := s.PollEvent()
@@ -101,6 +104,7 @@ func waitForQuit(s tcell.Screen, quit func()) {
 	}
 }
 
+// Handle keypresses and perform game actions accordingly
 func handleKeypress(eventKey *tcell.EventKey, quit func(), hoveringTetromino *UnplacedTetromino, board *Board) (placed bool) {
 	specialKeys := map[tcell.Key]string{
 		tcell.KeyLeft:   "left",
@@ -143,6 +147,7 @@ func handleKeypress(eventKey *tcell.EventKey, quit func(), hoveringTetromino *Un
 	return false
 }
 
+// Draw text at the specified position
 func drawText(s tcell.Screen, x1, y1 int, style tcell.Style, text string) {
 	row := y1
 	col := x1
