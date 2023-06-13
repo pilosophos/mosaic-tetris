@@ -59,21 +59,22 @@ func main() {
 	hoveringTetromino := tetrominoQueue.Pop()
 	board := NewBoard(BoardSizeW, BoardSizeH)
 
+	drawText(s, (BoardSizeW*2)+2, 1, defStyle, "NEXT")
+	drawText(s, 0, BoardSizeH+3, defStyle, "Move = WASD/Arrow keys")
+	drawText(s, 0, BoardSizeH+4, defStyle, "Hard drop = Space")
+	drawText(s, 0, BoardSizeH+5, defStyle, "Quit = Esc/Ctrl+C/q")
+	drawText(s, 0, BoardSizeH+7, defStyle, "HOW TO PLAY:")
+	drawText(s, 0, BoardSizeH+8, defStyle, "Tetris pieces come randomly rotated in the center")
+	drawText(s, 0, BoardSizeH+9, defStyle, "You can't rotate them, but you can put them anywhere and they don't fall")
+	drawText(s, 0, BoardSizeH+10, defStyle, "Clear horizontal (or vertical) lines for more points")
+
 	for {
 		board.HoverTetromino(hoveringTetromino)
 
 		s.Show()
-		drawText(s, (BoardSizeW*2)+2, 1, defStyle, "NEXT")
+		board.Render(s, defStyle, drawText, 0, 0)
 		drawText(s, (BoardSizeW*2)+2, 2, defStyle, tetrominoQueue.Peek().String())
 		drawText(s, (BoardSizeW*2)+2, BoardSizeH/2, defStyle, board.Message)
-		board.Render(s, defStyle, drawText, 0, 0)
-		drawText(s, 0, BoardSizeH+3, defStyle, "Move = WASD/Arrow keys")
-		drawText(s, 0, BoardSizeH+4, defStyle, "Hard drop = Space")
-		drawText(s, 0, BoardSizeH+5, defStyle, "Quit = Esc/Ctrl+C/q")
-		drawText(s, 0, BoardSizeH+7, defStyle, "HOW TO PLAY:")
-		drawText(s, 0, BoardSizeH+8, defStyle, "Tetris pieces come randomly rotated in the center")
-		drawText(s, 0, BoardSizeH+9, defStyle, "You can't rotate them, but you can put them anywhere and they don't fall")
-		drawText(s, 0, BoardSizeH+10, defStyle, "Clear horizontal (or vertical) lines for more points")
 
 		select {
 		case <-tickTimer:
