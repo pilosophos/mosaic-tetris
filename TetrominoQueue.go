@@ -7,14 +7,14 @@ import (
 
 type TetrominoQueue struct {
 	Queue []*UnplacedTetromino
-	RNG   rand.Source
+	RNG   *rand.Rand
 }
 
 // Create a new tetromino queue
 func NewTetrominoQueue() *TetrominoQueue {
 	return &TetrominoQueue{
 		[]*UnplacedTetromino{},
-		rand.NewSource(time.Now().Unix()),
+		rand.New(rand.NewSource(time.Now().Unix())),
 	}
 }
 
@@ -55,13 +55,13 @@ func (tq *TetrominoQueue) RefreshQueue() {
 
 	// shuffle tetromino shapes randomly
 	for i := range tetrominoShapes {
-		j := rand.Intn(i + 1)
+		j := tq.RNG.Intn(i + 1)
 		tetrominoShapes[i], tetrominoShapes[j] = tetrominoShapes[j], tetrominoShapes[i]
 	}
 
 	// rotate them a random amount of times
 	for _, tetromino := range tetrominoShapes {
-		tetromino.Rotate(90 * rand.Intn(4))
+		tetromino.Rotate(90 * tq.RNG.Intn(4))
 	}
 
 	tq.Queue = tetrominoShapes
