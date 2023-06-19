@@ -97,16 +97,15 @@ func main() {
 				board.HoverTetromino(hoveringTetromino)
 			}
 		}
-		updateScreen(s, board, defStyle, tetrominoQueue)
 	}
 }
 
 // Update the screen with the latest changes to the game state
 func updateScreen(s tcell.Screen, board *Board, defStyle tcell.Style, tetrominoQueue *TetrominoQueue) {
-	s.Show()
 	board.Render(s, defStyle, drawText, 0, 0)
 	drawText(s, (BoardSizeW*2)+2, 2, defStyle, tetrominoQueue.Peek().String())
 	drawText(s, (BoardSizeW*2)+2, BoardSizeH/2, defStyle, board.Message)
+	s.Show()
 }
 
 // Check if the current score is a high score, and if so, save the file
