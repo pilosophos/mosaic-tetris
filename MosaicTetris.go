@@ -72,7 +72,6 @@ func main() {
 	board.HoverTetromino(hoveringTetromino)
 
 	for {
-
 		if screenShouldUpdate {
 			updateScreen(s, board, defStyle, tetrominoQueue)
 		}
@@ -106,6 +105,7 @@ func main() {
 			screenShouldUpdate = false
 		}
 
+		// We have to update again at the end, otherwise we'll be one input behind
 		if screenShouldUpdate {
 			updateScreen(s, board, defStyle, tetrominoQueue)
 		}
