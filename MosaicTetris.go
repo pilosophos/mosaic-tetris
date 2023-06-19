@@ -68,15 +68,10 @@ func main() {
 	drawText(s, 0, BoardSizeH+9, defStyle, "You can't rotate them, but you can put them anywhere and they don't fall")
 	drawText(s, 0, BoardSizeH+10, defStyle, "Clear horizontal (or vertical) lines for more points")
 
-	screenShouldUpdate := true
 	board.HoverTetromino(hoveringTetromino)
 
 	for {
-		if screenShouldUpdate {
-			updateScreen(s, board, defStyle, tetrominoQueue)
-		}
-
-		screenShouldUpdate = true
+		updateScreen(s, board, defStyle, tetrominoQueue)
 		select {
 		case <-tickTimer:
 			timeleft := hoveringTetromino.Tick()
@@ -101,14 +96,8 @@ func main() {
 				}
 				board.HoverTetromino(hoveringTetromino)
 			}
-		default:
-			screenShouldUpdate = false
 		}
-
-		// We have to update again at the end, otherwise we'll be one input behind
-		if screenShouldUpdate {
-			updateScreen(s, board, defStyle, tetrominoQueue)
-		}
+		updateScreen(s, board, defStyle, tetrominoQueue)
 	}
 }
 
