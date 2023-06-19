@@ -68,14 +68,16 @@ func main() {
 	drawText(s, 0, BoardSizeH+9, defStyle, "You can't rotate them, but you can put them anywhere and they don't fall")
 	drawText(s, 0, BoardSizeH+10, defStyle, "Clear horizontal (or vertical) lines for more points")
 
+	screenShouldUpdate := true
+	board.HoverTetromino(hoveringTetromino)
+
 	for {
-		board.HoverTetromino(hoveringTetromino)
 
-		s.Show()
-		board.Render(s, defStyle, drawText, 0, 0)
-		drawText(s, (BoardSizeW*2)+2, 2, defStyle, tetrominoQueue.Peek().String())
-		drawText(s, (BoardSizeW*2)+2, BoardSizeH/2, defStyle, board.Message)
+		if screenShouldUpdate {
+			updateScreen(s, board, defStyle, tetrominoQueue)
+		}
 
+		screenShouldUpdate = true
 		select {
 		case <-tickTimer:
 			timeleft := hoveringTetromino.Tick()
@@ -86,6 +88,7 @@ func main() {
 					gameOver(board.Score, board.LinesCleared, highscorePath, s, quit)
 				}
 				hoveringTetromino = tetrominoQueue.Pop()
+				board.HoverTetromino(hoveringTetromino)
 			}
 		case ev := <-termEvents:
 			switch ev := ev.(type) {
@@ -97,10 +100,24 @@ func main() {
 					s.Beep()
 					hoveringTetromino = tetrominoQueue.Pop()
 				}
+				board.HoverTetromino(hoveringTetromino)
 			}
-		default: // pass
+		default:
+			screenShouldUpdate = false
+		}
+
+		if screenShouldUpdate {
+			updateScreen(s, board, defStyle, tetrominoQueue)
 		}
 	}
+}
+
+// Update the screen with the latest changes to the game state
+func updateScreen(s tcell.Screen, board *Board, defStyle tcell.Style, tetrominoQueue *TetrominoQueue) {
+	s.Show()
+	board.Render(s, defStyle, drawText, 0, 0)
+	drawText(s, (BoardSizeW*2)+2, 2, defStyle, tetrominoQueue.Peek().String())
+	drawText(s, (BoardSizeW*2)+2, BoardSizeH/2, defStyle, board.Message)
 }
 
 // Check if the current score is a high score, and if so, save the file
