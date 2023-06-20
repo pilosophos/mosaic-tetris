@@ -37,6 +37,10 @@ func main() {
 		os.Exit(0)
 	}
 
+	if runtime.GOOS == "js" {
+		s.SetSize(42, 22)
+	}
+
 	var highscorePath string
 	if home, err := os.UserHomeDir(); err == nil {
 		highscorePath = filepath.Join(home, ".mosaic-tetris-highscore.json")
