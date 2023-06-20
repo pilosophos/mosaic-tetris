@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/user"
 	"path/filepath"
+	"runtime"
 	"time"
 
 	"github.com/gdamore/tcell/v2"
@@ -50,19 +51,21 @@ func main() {
 
 		drawText(s, RightOfBoard, 1, defStyle, "NEXT")
 
-		drawText(s, 0, BoardSizeH+3, defStyle, "Move       WASD/Arrow keys")
-		drawText(s, 0, BoardSizeH+4, defStyle, "Hard drop  Space")
-		drawText(s, 0, BoardSizeH+5, defStyle, "Quit       Q/Esc/Ctrl+C")
+		if runtime.GOOS != "js" {
+			drawText(s, 0, BoardSizeH+3, defStyle, "Move       WASD/Arrow keys")
+			drawText(s, 0, BoardSizeH+4, defStyle, "Hard drop  Space")
+			drawText(s, 0, BoardSizeH+5, defStyle, "Quit       Q/Esc/Ctrl+C")
 
-		drawText(s, 0, BoardSizeH+7, defStyle, "HOW TO PLAY:")
-		drawText(s, 0, BoardSizeH+8, defStyle, "Tetris pieces come randomly rotated in")
-		drawText(s, 0, BoardSizeH+9, defStyle, "the center")
+			drawText(s, 0, BoardSizeH+7, defStyle, "HOW TO PLAY:")
+			drawText(s, 0, BoardSizeH+8, defStyle, "Tetris pieces come randomly rotated in")
+			drawText(s, 0, BoardSizeH+9, defStyle, "the center")
 
-		drawText(s, 0, BoardSizeH+11, defStyle, "You can't rotate them, but you can put")
-		drawText(s, 0, BoardSizeH+12, defStyle, "them anywhere and they don't fall")
+			drawText(s, 0, BoardSizeH+11, defStyle, "You can't rotate them, but you can put")
+			drawText(s, 0, BoardSizeH+12, defStyle, "them anywhere and they don't fall")
 
-		drawText(s, 0, BoardSizeH+14, defStyle, "Clear horizontal (or vertical)")
-		drawText(s, 0, BoardSizeH+15, defStyle, "lines for more points")
+			drawText(s, 0, BoardSizeH+14, defStyle, "Clear horizontal (or vertical)")
+			drawText(s, 0, BoardSizeH+15, defStyle, "lines for more points")
+		}
 
 		termEvents := make(chan tcell.Event)
 		tcellQuit := make(chan struct{})
@@ -171,8 +174,10 @@ func gameOver(score, lines int, highscorePath string, s tcell.Screen, defStyle t
 	} else {
 		drawText(s, RightOfBoard, BoardSizeH/2+1, defStyle, "You lose!")
 	}
-	drawText(s, RightOfBoard, BoardSizeH/2+2, defStyle, "Press N for a new game")
-	drawText(s, RightOfBoard, BoardSizeH/2+3, defStyle, "Press Q to quit")
+	drawText(s, RightOfBoard, BoardSizeH/2+2, defStyle, "Press N for new game")
+	if runtime.GOOS != "js" {
+		drawText(s, RightOfBoard, BoardSizeH/2+3, defStyle, "Press Q to quit")
+	}
 	s.Show()
 
 	waitForQuitOrNewGame(s, quit)
@@ -198,7 +203,7 @@ func waitForQuitOrNewGame(s tcell.Screen, quit func()) {
 	for {
 		ev := s.PollEvent()
 		if ev, ok := ev.(*tcell.EventKey); ok {
-			if ev.Key() == tcell.KeyCtrlC || ev.Key() == tcell.KeyEsc || ev.Rune() == 'q' {
+			if runtime.GOOS != "js" && (ev.Key() == tcell.KeyCtrlC || ev.Key() == tcell.KeyEsc || ev.Rune() == 'q') {
 				quit()
 			} else if ev.Rune() == 'n' {
 				return
