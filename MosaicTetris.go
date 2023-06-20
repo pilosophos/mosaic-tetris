@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"log"
 	"os"
 	"os/user"
@@ -15,6 +14,7 @@ import (
 
 const BoardSizeW = 10
 const BoardSizeH = 20
+const RightOfBoard = (BoardSizeW * 2) + 2
 
 type Highscore struct {
 	Score int
@@ -44,57 +44,74 @@ func main() {
 	// set up TUI
 	defStyle := tcell.StyleDefault.Background(tcell.Color16.TrueColor()).Foreground(tcell.ColorWhite)
 	s.SetStyle(defStyle)
-	s.Clear()
-
-	termEvents := make(chan tcell.Event)
-	tcellQuit := make(chan struct{})
-	go s.ChannelEvents(termEvents, tcellQuit)
-
-	// start global tick timer
-	tickTimer := make(chan bool)
-	go tickGameForever(tickTimer)
-
-	// set up the game
-	tetrominoQueue := NewTetrominoQueue()
-	hoveringTetromino := tetrominoQueue.Pop()
-	board := NewBoard(BoardSizeW, BoardSizeH)
-
-	drawText(s, (BoardSizeW*2)+2, 1, defStyle, "NEXT")
-	drawText(s, 0, BoardSizeH+3, defStyle, "Move = WASD/Arrow keys")
-	drawText(s, 0, BoardSizeH+4, defStyle, "Hard drop = Space")
-	drawText(s, 0, BoardSizeH+5, defStyle, "Quit = Esc/Ctrl+C/q")
-	drawText(s, 0, BoardSizeH+7, defStyle, "HOW TO PLAY:")
-	drawText(s, 0, BoardSizeH+8, defStyle, "Tetris pieces come randomly rotated in the center")
-	drawText(s, 0, BoardSizeH+9, defStyle, "You can't rotate them, but you can put them anywhere and they don't fall")
-	drawText(s, 0, BoardSizeH+10, defStyle, "Clear horizontal (or vertical) lines for more points")
-
-	board.HoverTetromino(hoveringTetromino)
 
 	for {
-		updateScreen(s, board, defStyle, tetrominoQueue)
-		select {
-		case <-tickTimer:
-			timeleft := hoveringTetromino.Tick()
-			if timeleft == 0 {
-				tetrominoPlaced := board.PlaceTetromino(hoveringTetromino)
-				s.Beep()
-				if !tetrominoPlaced {
-					gameOver(board.Score, board.LinesCleared, highscorePath, s, quit)
-				}
-				hoveringTetromino = tetrominoQueue.Pop()
-				board.HoverTetromino(hoveringTetromino)
-			}
-		case ev := <-termEvents:
-			switch ev := ev.(type) {
-			case *tcell.EventResize:
-				s.Sync()
-			case *tcell.EventKey:
-				placed := handleKeypress(ev, quit, hoveringTetromino, board)
-				if placed {
+		s.Clear()
+
+		drawText(s, RightOfBoard, 1, defStyle, "NEXT")
+
+		drawText(s, 0, BoardSizeH+3, defStyle, "Move       WASD/Arrow keys")
+		drawText(s, 0, BoardSizeH+4, defStyle, "Hard drop  Space")
+		drawText(s, 0, BoardSizeH+5, defStyle, "Quit       Q/Esc/Ctrl+C")
+
+		drawText(s, 0, BoardSizeH+7, defStyle, "HOW TO PLAY:")
+		drawText(s, 0, BoardSizeH+8, defStyle, "Tetris pieces come randomly rotated in")
+		drawText(s, 0, BoardSizeH+9, defStyle, "the center")
+
+		drawText(s, 0, BoardSizeH+11, defStyle, "You can't rotate them, but you can put")
+		drawText(s, 0, BoardSizeH+12, defStyle, "them anywhere and they don't fall")
+
+		drawText(s, 0, BoardSizeH+14, defStyle, "Clear horizontal (or vertical)")
+		drawText(s, 0, BoardSizeH+15, defStyle, "lines for more points")
+
+		termEvents := make(chan tcell.Event)
+		tcellQuit := make(chan struct{})
+		go s.ChannelEvents(termEvents, tcellQuit)
+
+		// start global tick timer
+		tickTimer := make(chan bool)
+		go tickGameForever(tickTimer)
+
+		// set up the game
+		tetrominoQueue := NewTetrominoQueue()
+		hoveringTetromino := tetrominoQueue.Pop()
+		board := NewBoard(BoardSizeW, BoardSizeH)
+
+		board.HoverTetromino(hoveringTetromino)
+
+		startNewGame := false
+		for {
+			updateScreen(s, board, defStyle, tetrominoQueue)
+			select {
+			case <-tickTimer:
+				timeleft := hoveringTetromino.Tick()
+				if timeleft == 0 {
+					tetrominoPlaced := board.PlaceTetromino(hoveringTetromino)
 					s.Beep()
+					if !tetrominoPlaced {
+						close(tcellQuit)
+						gameOver(board.Score, board.LinesCleared, highscorePath, s, defStyle, quit)
+						startNewGame = true
+					}
 					hoveringTetromino = tetrominoQueue.Pop()
+					board.HoverTetromino(hoveringTetromino)
 				}
-				board.HoverTetromino(hoveringTetromino)
+			case ev := <-termEvents:
+				switch ev := ev.(type) {
+				case *tcell.EventResize:
+					s.Sync()
+				case *tcell.EventKey:
+					placed := handleKeypress(ev, quit, hoveringTetromino, board)
+					if placed {
+						s.Beep()
+						hoveringTetromino = tetrominoQueue.Pop()
+					}
+					board.HoverTetromino(hoveringTetromino)
+				}
+			}
+
+			if startNewGame {
+				break
 			}
 		}
 	}
@@ -103,8 +120,8 @@ func main() {
 // Update the screen with the latest changes to the game state
 func updateScreen(s tcell.Screen, board *Board, defStyle tcell.Style, tetrominoQueue *TetrominoQueue) {
 	board.Render(s, defStyle, drawText, 0, 0)
-	drawText(s, (BoardSizeW*2)+2, 2, defStyle, tetrominoQueue.Peek().String())
-	drawText(s, (BoardSizeW*2)+2, BoardSizeH/2, defStyle, board.Message)
+	drawText(s, RightOfBoard, 2, defStyle, tetrominoQueue.Peek().String())
+	drawText(s, RightOfBoard, BoardSizeH/2, defStyle, board.Message)
 	s.Show()
 }
 
@@ -147,15 +164,24 @@ func saveHighscore(score, lines int, highscorePath string) bool {
 }
 
 // Enter the game over state, writing the highscore if needed and prompting the user for a quit
-func gameOver(score, lines int, highscorePath string, s tcell.Screen, quit func()) {
+func gameOver(score, lines int, highscorePath string, s tcell.Screen, defStyle tcell.Style, quit func()) {
 	highscoreSaved := saveHighscore(score, lines, highscorePath)
 	if highscoreSaved {
-		fmt.Println("New highscore!")
+		drawText(s, RightOfBoard, BoardSizeH/2+1, defStyle, "New highscore!")
 	} else {
-		fmt.Println("You lose!")
+		drawText(s, RightOfBoard, BoardSizeH/2+1, defStyle, "You lose!")
 	}
-	fmt.Println("Press q to quit!")
-	waitForQuit(s, quit)
+	drawText(s, RightOfBoard, BoardSizeH/2+2, defStyle, "Press N for a new game")
+	drawText(s, RightOfBoard, BoardSizeH/2+3, defStyle, "Press Q to quit")
+	s.Show()
+
+	waitForQuitOrNewGame(s, quit)
+
+	blank := "                      "
+	for i := 1; i < 3; i++ {
+		drawText(s, RightOfBoard, BoardSizeH/2+i, defStyle, blank)
+	}
+
 }
 
 // Run the global tick timer
@@ -166,13 +192,16 @@ func tickGameForever(tick chan bool) {
 	}
 }
 
-// Hang the program until a quit key is pressed
-func waitForQuit(s tcell.Screen, quit func()) {
+// Hang the program until the quit key is pressed or a new game requested
+// The program ends if the q key is pressed, so "new game" is just a return
+func waitForQuitOrNewGame(s tcell.Screen, quit func()) {
 	for {
 		ev := s.PollEvent()
 		if ev, ok := ev.(*tcell.EventKey); ok {
 			if ev.Key() == tcell.KeyCtrlC || ev.Key() == tcell.KeyEsc || ev.Rune() == 'q' {
 				quit()
+			} else if ev.Rune() == 'n' {
+				return
 			}
 		}
 	}
